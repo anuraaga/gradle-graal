@@ -50,7 +50,7 @@ class GradleGraalToolingPlugin implements Plugin<Project> {
         }
         project.getPluginManager().apply(JavaPlugin.class);
         GraalToolingExtension extension = project.getExtensions().create(
-            "graalTooling", GraalToolingExtension.class, project);
+                "graalTooling", GraalToolingExtension.class, project);
 
         Path cacheDir = cacheDir(project);
 
@@ -75,11 +75,11 @@ class GradleGraalToolingPlugin implements Plugin<Project> {
     }
 
     static Path cacheDir(Project project) {
-      return Optional.ofNullable(
-          (String) project.getRootProject().findProperty("com.palantir.graal.cache.dir"))
-          .map(Paths::get)
-          .orElse(project.getGradle().getGradleUserHomeDir().toPath()
-              .resolve("caches")
-              .resolve("com.palantir.graal"));
+        return Optional.ofNullable(
+            (String) project.getRootProject().findProperty("com.palantir.graal.cache.dir"))
+            .map(Paths::get)
+            .orElse(project.getGradle().getGradleUserHomeDir().toPath()
+                .resolve("caches")
+                .resolve("com.palantir.graal"));
     }
 }

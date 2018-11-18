@@ -52,7 +52,7 @@ public class GradleGraalPlugin implements Plugin<Project> {
 
         TaskProvider<Jar> jar = project.getTasks().withType(Jar.class).named("jar");
         TaskProvider<ExtractGraalTask> extractGraal = project.getRootProject().getTasks()
-            .withType(ExtractGraalTask.class).named("extractGraalTooling");
+                .withType(ExtractGraalTask.class).named("extractGraalTooling");
         project.getTasks().register(
                 "nativeImage",
                 NativeImageTask.class,

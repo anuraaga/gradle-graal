@@ -25,38 +25,14 @@ import org.gradle.api.provider.Provider;
 /** Contains options and settings for tuning GraalVM use. */
 public class GraalExtension {
 
-    private static final String DEFAULT_DOWNLOAD_BASE_URL = "https://github.com/oracle/graal/releases/download/";
-    private static final String DEFAULT_GRAAL_VERSION = "1.0.0-rc9";
-
-    private final Property<String> downloadBaseUrl;
-    private final Property<String> graalVersion;
     private final Property<String> mainClass;
     private final Property<String> outputName;
     private final ListProperty<String> options;
 
     public GraalExtension(Project project) {
-        downloadBaseUrl = project.getObjects().property(String.class);
-        graalVersion = project.getObjects().property(String.class);
         mainClass = project.getObjects().property(String.class);
         outputName = project.getObjects().property(String.class);
         options = project.getObjects().listProperty(String.class);
-
-        // defaults
-        downloadBaseUrl.set(DEFAULT_DOWNLOAD_BASE_URL);
-        graalVersion.set(DEFAULT_GRAAL_VERSION);
-    }
-
-    public final void downloadBaseUrl(String value) {
-        downloadBaseUrl.set(value);
-    }
-
-    /**
-     * Returns the base URL to use for downloading GraalVM binaries.
-     *
-     * <p>Defaults to {@link #DEFAULT_DOWNLOAD_BASE_URL}.</p>
-     */
-    public final Provider<String> getDownloadBaseUrl() {
-        return downloadBaseUrl;
     }
 
     public final void mainClass(String value) {
@@ -79,19 +55,6 @@ public class GraalExtension {
      */
     public final Provider<String> getOutputName() {
         return outputName;
-    }
-
-    public final void graalVersion(String value) {
-        graalVersion.set(value);
-    }
-
-    /**
-     * Returns the graalVersion of GraalVM to use.
-     *
-     * <p>Defaults to {@link #DEFAULT_GRAAL_VERSION}</p>
-     */
-    public final Provider<String> getGraalVersion() {
-        return graalVersion;
     }
 
 

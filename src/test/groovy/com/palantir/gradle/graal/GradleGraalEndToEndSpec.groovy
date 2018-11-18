@@ -43,7 +43,7 @@ class GradleGraalEndToEndSpec extends IntegrationSpec {
         }
         
         graalTooling {
-            graalVersion '1.0.0-rc5'          
+            graalVersion '1.0.0-rc5'
         }
         '''
 

@@ -50,6 +50,9 @@ public class GradleGraalPlugin implements Plugin<Project> {
         project.getPluginManager().apply(JavaPlugin.class);
         GraalExtension extension = project.getExtensions().create("graal", GraalExtension.class, project);
 
+        GraalToolingExtension toolingExtension =
+                project.getRootProject().getExtensions().getByType(GraalToolingExtension.class);
+
         TaskProvider<Jar> jar = project.getTasks().withType(Jar.class).named("jar");
         TaskProvider<ExtractGraalTask> extractGraal = project.getRootProject().getTasks()
                 .withType(ExtractGraalTask.class).named("extractGraalTooling");
@@ -59,7 +62,7 @@ public class GradleGraalPlugin implements Plugin<Project> {
                 task -> {
                     task.setMainClass(extension.getMainClass());
                     task.setOutputName(extension.getOutputName());
-                    task.setGraalVersion(extension.getGraalVersion());
+                    task.setGraalVersion(toolingExtension.getGraalVersion());
                     task.setJarFile(jar.map(j -> j.getOutputs().getFiles().getSingleFile()));
                     task.setClasspath(project.getConfigurations().named("runtimeClasspath"));
                     task.setCacheDir(GradleGraalToolingPlugin.cacheDir(project));

@@ -40,7 +40,10 @@ class GradleGraalEndToEndSpec extends IntegrationSpec {
         graal {
             mainClass 'com.palantir.test.Main'
             outputName 'hello-world'
-            graalVersion '1.0.0-rc5'
+        }
+        
+        graalTooling {
+            graalVersion '1.0.0-rc5'          
         }
         '''
 
@@ -106,9 +109,12 @@ class GradleGraalEndToEndSpec extends IntegrationSpec {
         graal {
             mainClass 'com.palantir.test.Main'
             outputName 'hello-world'
-            graalVersion '1.0.0-rc5'
             // By default, only file:// is supported, see https://github.com/oracle/graal/blob/master/substratevm/URL-PROTOCOLS.md
             option '-H:EnableURLProtocols=http'
+        }
+        
+        graalTooling {
+            graalVersion '1.0.0-rc5'          
         }
         '''
 
@@ -130,9 +136,12 @@ class GradleGraalEndToEndSpec extends IntegrationSpec {
         graal {
             mainClass 'com.palantir.test.Main'
             outputName 'hello-world'
-            graalVersion '1.0.0-rc5'
             option '-H:EnableURLProtocols=http'
             option '-H:Name=foo'
+        }
+        
+        graalTooling {
+            graalVersion '1.0.0-rc5'          
         }
         '''
 

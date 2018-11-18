@@ -49,7 +49,7 @@ class GradleGraalPluginIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'com.palantir.graal'
 
-            graal {
+            graalTooling {
                graalVersion '1.0.0-rc3'
                downloadBaseUrl '${fakeBaseUrl}'
             }
@@ -76,7 +76,7 @@ class GradleGraalPluginIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'com.palantir.graal'
 
-            graal {
+            graalTooling {
                downloadBaseUrl '${fakeBaseUrl}'
             }
         """

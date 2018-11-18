@@ -16,14 +16,16 @@
 
 package com.palantir.gradle.graal;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.jvm.tasks.Jar;
 
 /**
- * Adds tasks to download, extract and interact with GraalVM tooling.
+ * Adds tasks to download and extract GraalVM tooling.
  *
  * <p>All tooling execution (e.g. nativeImage) will cause GraalVM tooling to download and cache if not already
  * present. Currently, GraalVM CE only supports MacOS and Linux, and, as a result, this plugin will only correctly
@@ -39,33 +41,45 @@ import org.gradle.jvm.tasks.Jar;
  *     └── graalvm-ce-[version]-amd64.tar.gz
  * </pre>
  */
-public class GradleGraalPlugin implements Plugin<Project> {
-
-    static final String TASK_GROUP = "Graal";
+class GradleGraalToolingPlugin implements Plugin<Project> {
 
     @Override
     public final void apply(Project project) {
-        project.getRootProject().getPluginManager().apply(GradleGraalToolingPlugin.class);
-
+        if (project.getParent() != null) {
+            throw new IllegalStateException("GradleGraalToolingPlugin must be applied to the root project.");
+        }
         project.getPluginManager().apply(JavaPlugin.class);
-        GraalExtension extension = project.getExtensions().create("graal", GraalExtension.class, project);
+        GraalToolingExtension extension = project.getExtensions().create(
+            "graalTooling", GraalToolingExtension.class, project);
 
-        TaskProvider<Jar> jar = project.getTasks().withType(Jar.class).named("jar");
-        TaskProvider<ExtractGraalTask> extractGraal = project.getRootProject().getTasks()
-            .withType(ExtractGraalTask.class).named("extractGraalTooling");
-        project.getTasks().register(
-                "nativeImage",
-                NativeImageTask.class,
+        Path cacheDir = cacheDir(project);
+
+        TaskProvider<DownloadGraalTask> downloadGraal = project.getTasks().register(
+                "downloadGraalTooling",
+                DownloadGraalTask.class,
                 task -> {
-                    task.setMainClass(extension.getMainClass());
-                    task.setOutputName(extension.getOutputName());
                     task.setGraalVersion(extension.getGraalVersion());
-                    task.setJarFile(jar.map(j -> j.getOutputs().getFiles().getSingleFile()));
-                    task.setClasspath(project.getConfigurations().named("runtimeClasspath"));
-                    task.setCacheDir(GradleGraalToolingPlugin.cacheDir(project));
-                    task.setOptions(extension.getOptions());
-                    task.dependsOn(extractGraal);
-                    task.dependsOn(jar);
+                    task.setDownloadBaseUrl(extension.getDownloadBaseUrl());
+                    task.setCacheDir(cacheDir);
                 });
+
+        project.getTasks().register(
+                "extractGraalTooling",
+                ExtractGraalTask.class,
+                task -> {
+                    task.setGraalVersion(extension.getGraalVersion());
+                    task.setInputTgz(downloadGraal.get().getTgz());
+                    task.setCacheDir(cacheDir);
+                    task.dependsOn(downloadGraal);
+                });
+    }
+
+    static Path cacheDir(Project project) {
+      return Optional.ofNullable(
+          (String) project.getRootProject().findProperty("com.palantir.graal.cache.dir"))
+          .map(Paths::get)
+          .orElse(project.getGradle().getGradleUserHomeDir().toPath()
+              .resolve("caches")
+              .resolve("com.palantir.graal"));
     }
 }
